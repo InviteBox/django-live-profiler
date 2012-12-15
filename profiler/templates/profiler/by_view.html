@@ -1,5 +1,6 @@
 {% extends 'profiler/base.html' %}
 {% block content %}
+{% for k,v in queries.items %}
 <table class="table table-striped sortable">
   <thead>
     <tr>
@@ -8,9 +9,16 @@
       <th>Total time</th>
       <th>Avg time</th>
     </tr>
+    <tr>
+      <th>{{ k }}</th>
+      <th>{{ v.times_ran }}</th>
+      <th>{{ v.total_time }}</th>
+      <th>{{ v.average_time }}</th>
+    </tr>      
+
   </thead>
-  <tbody>
-    {% for q in queries %}      
+  <tbody>  
+    {% for q in v.queries %}      
     <tr>
       <td>{{ q.query  }}</td>
       <td>{{ q.times_ran }}</td>
@@ -18,7 +26,8 @@
       <td>{{ q.average_time|floatformat:2 }}</td>
     </tr>
     {% endfor %}
-
   </tbody>
 </table>
+{% endfor %}
+
 {% endblock %}

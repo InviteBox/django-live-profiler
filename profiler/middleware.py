@@ -1,4 +1,5 @@
 from datetime import datetime
+import inspect
 
 from django.db import connection
 from django.core.cache import cache
@@ -15,8 +16,12 @@ class ProfilerMiddleware(object):
         return None
 
     def process_view(self, request, view_func, view_args, view_kwargs):
-        backend = backends.get_backend()
-        backend.start_view(str(view_func))
+        if inspect.ismethod(view_func):
+            view_name = view_func.im_class.__module__+ '.' + view_func.im_class.__name__ + view_func.__name__
+        else:
+            view_name = view_func.__module__ + '.' + view_func.__name__
+        backend = backends.get_backend()        
+        backend.start_view(view_name)
         return None
     
     def process_response(self, request, response):

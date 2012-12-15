@@ -68,8 +68,12 @@ class MongoBackend(object):
                         'view' : self.view,
                         'sessions' : self.sessions})
     
-    def get_stats(self, session):
-        ret = queries.group(key={'query':1}, condition={}, initial={'total_time':0, 'times_ran' : 0}, reduce = 'function(obj, prev){prev.total_time += + obj.time;prev.times_ran +=1;}')
+    def get_stats(self, session, group_by_view=False):
+        if group_by_view:
+            group = {'query':2, 'view' : 1}
+        else:
+            group = {'query':1}
+        ret = queries.group(key=group, condition={}, initial={'total_time':0, 'times_ran' : 0}, reduce = 'function(obj, prev){prev.total_time += + obj.time;prev.times_ran +=1;}')
         for r in ret:
             r['average_time'] = r['total_time'] / r['times_ran']
         return ret
