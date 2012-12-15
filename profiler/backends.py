@@ -50,16 +50,22 @@ queries = connection['profiler']['queries']
 class MongoBackend(object):
     def __init__(self, sessions):
         self.sessions = sessions
+        self.view = None
 
     def start_request(self):
         pass
 
     def end_request(self):
         pass
+
+    def start_view(self, view):
+        self.view = view
+
     
     def log_query(self, query, time):
         queries.insert({'query' : query,
                         'time' : time,
+                        'view' : self.view,
                         'sessions' : self.sessions})
     
     def get_stats(self, session):
