@@ -16,10 +16,10 @@ All existing DB access profiling solutions for Django seem to be focusing on a s
 *django-live-profiler* currently requires MongoDB to store query data. 
 
 ##Installation
-
-1. Add `'profiler'` app to `INSTALLED_APPS` 
-2. Add `'profiler.middleware.ProfilerMiddleware'` to `MIDDLEWARE_CLASSES`
-3. Add `url(r'^profiler/', include('profiler.urls'))` to your urlconf
+1. Run `pip install django-live-profiler`
+2. Add `'profiler'` app to `INSTALLED_APPS` 
+3. Add `'profiler.middleware.ProfilerMiddleware'` to `MIDDLEWARE_CLASSES`
+4. Add `url(r'^profiler/', include('profiler.urls'))` to your urlconf
 
 
 Visit http://yoursite.com/profiler/ for results.
