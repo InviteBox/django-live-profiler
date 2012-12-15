@@ -5,25 +5,25 @@
   <thead>
     <tr>
       <th>Query</th>
-      <th>Times ran</th>
-      <th>Total time</th>
-      <th>Avg time</th>
+      <th class="num">Times ran</th>
+      <th class="num">Total time</th>
+      <th class="num">Avg time</th>
     </tr>
     <tr>
       <th>{{ k }}</th>
-      <th>{{ v.times_ran }}</th>
-      <th>{{ v.total_time }}</th>
-      <th>{{ v.average_time }}</th>
+      <th class="num">{{ v.times_ran }}</th>
+      <th class="num">{{ v.total_time }}</th>
+      <th class="num">{{ v.average_time|floatformat:2 }}</th>
     </tr>      
 
   </thead>
   <tbody>  
     {% for q in v.queries %}      
     <tr>
-      <td>{{ q.query  }}</td>
-      <td>{{ q.times_ran }}</td>
-      <td>{{ q.total_time }}</td>
-      <td>{{ q.average_time|floatformat:2 }}</td>
+      <td class="query-collapse">{{ q.query }}</td>
+      <td class="num">{{ q.times_ran }}</td>
+      <td class="num">{{ q.total_time }}</td>
+      <td class="num">{{ q.average_time|floatformat:2 }}</td>
     </tr>
     {% endfor %}
   </tbody>
