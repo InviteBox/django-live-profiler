@@ -78,6 +78,8 @@ class MongoBackend(object):
             r['average_time'] = r['total_time'] / r['times_ran']
         return ret
 
+    def reset(self):
+        queries.remove({})
 
 
 

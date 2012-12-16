@@ -1,8 +1,9 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render_to_response
 from django.template.context import RequestContext
 from django.core.cache import cache
 from django.contrib.auth.decorators import user_passes_test
+from django.core.urlresolvers import reverse
 
 from profiler.backends import get_backend
 
@@ -31,4 +32,14 @@ def stats_by_view(request):
         
     return render_to_response('profiler/by_view.html',
                               {'queries' : grouped},
+                              context_instance=RequestContext(request))
+
+@user_passes_test(lambda u:u.is_superuser)
+def reset(request):
+    next = request.GET.get('next') or request.POST.get('next') or request.META.get('HTTP_REFERER') or reverse('profiler_global_stats')
+    if request.method == 'POST':
+        get_backend().reset()
+        return HttpResponseRedirect(next)
+    return render_to_response('profiler/reset.html',
+                              {'next' : next},
                               context_instance=RequestContext(request))

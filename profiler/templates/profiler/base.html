@@ -27,7 +27,7 @@
             <ul class="nav">
               <li><a href="{% url profiler_global_stats %}">Global stats</a></li>
               <li><a href="{% url profiler_stats_by_view %}">By view</a></li>
-              <li><a href="#">Reset</a></li>
+              <li><a href="{% url profiler_reset %}?next={{ request.path }}">Reset</a></li>
             </ul>
           </div><!--/.nav-collapse -->
         </div>

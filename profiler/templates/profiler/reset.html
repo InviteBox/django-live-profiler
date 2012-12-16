@@ -1,0 +1,13 @@
+{% extends 'profiler/base.html' %}
+{% block content %}
+<form action="." method="POST">
+  {% csrf_token %}
+  <input type="hidden" value="{{ next }}" name="next"/>
+  <h2>Reset profiler data?</h2>
+  <div class="form-actions">    
+    <button type="submit" class="btn btn-large btn-danger">Yes</button>
+    <a href="{{ next }}" class="btn btn-large">No</a>
+  </div>
+</form>
+
+{% endblock content %}
