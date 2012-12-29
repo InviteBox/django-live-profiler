@@ -8,14 +8,14 @@ from setuptools import setup
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-if os.path.exists('README.md'):
-    long_description = read('README.md')
+if os.path.exists('README.rst'):
+    long_description = read('README.rst')
 else:
     long_description = 'https://github.com/InviteBox/django-live-profiler'
 
 setup(
     name = "django-live-profiler",
-    version = "0.0.5",
+    version = "0.0.6",
     author = "Alexander Tereshkin",
     author_email = "atereshkin@invitebox.com",
     description = ("A database access profiler for Django-based applications that can be ran in production "
