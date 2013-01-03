@@ -84,10 +84,15 @@ class MongoBackend(object):
 
 
 
+
 _local = threading.local()
 
 def make_backend(sessions):
-    _local.backend = MongoBackend(sessions)
+    print 'a'
+    #_local.backend = MongoBackend(sessions)
+    from profiler.zmq_backend import ZmqBackend
+    _local.backend = ZmqBackend(sessions)
+    print _local.backend
     return _local.backend
 
 def get_backend():
