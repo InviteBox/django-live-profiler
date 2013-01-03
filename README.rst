@@ -16,10 +16,6 @@ All existing DB access profiling solutions for Django seem to be focusing on a s
 .. image :: https://github.com/InviteBox/django-live-profiler/raw/master/doc/screenshot1.png
    :alt: screenshot
 
-------------
-Requirements
-------------
-*django-live-profiler* currently requires MongoDB to store query data. 
 
 ------------
 Installation

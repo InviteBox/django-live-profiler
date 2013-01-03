@@ -25,7 +25,7 @@ setup(
     url = "https://github.com/InviteBox/django-live-profiler",
     packages=['profiler',],
     long_description=long_description,
-    install_requires=('pymongo',),
+    install_requires=('pyzmq',),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Software Development",
