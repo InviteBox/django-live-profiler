@@ -9,7 +9,7 @@ Rationale
 ---------
 Profiling web applications on a development environment often produces misleading results due to different patterns in the data, different patterns in user behavior and differences in infrastructure. 
 
-All existing DB access profiling solutions for Django seem to be focusing on a single request. However, in the real world certain queries might be negligible in a single request while still puttin a considerable strain the database across all requests.
+All existing DB access profiling solutions for Django seem to be focusing on a single request. However, in the real world certain queries might be negligible in a single request while still putting a considerable strain the database across all requests.
 
 *django-live-profiler* aims to solve these issues by collecting database usage data from a live application.
 

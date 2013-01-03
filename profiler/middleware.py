@@ -11,9 +11,7 @@ class ProfilerMiddleware(object):
     def process_request(self, request):
         active_sessions = cache.get('profiler_active_sessions', [])
         #TODO: filter sessions by condition
-        print 'wtf'
-        backend = backends.make_backend(active_sessions)
-        print backend
+        backend = backends.get_backend()
         backend.start_request()
         return None
 
