@@ -13,8 +13,8 @@
     {% for q in queries %}      
     <tr>
       <td class="query-collapse">{{ q.query  }}</td>
-      <td class="num">{{ q.times_ran }}</td>
-      <td class="num">{{ q.total_time }}</td>
+      <td class="num">{{ q.count }}</td>
+      <td class="num">{{ q.time }}</td>
       <td class="num">{{ q.average_time|floatformat:2 }}</td>
     </tr>
     {% endfor %}

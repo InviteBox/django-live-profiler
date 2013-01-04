@@ -3,11 +3,13 @@ from datetime import datetime
 from django.db.models.sql.compiler import SQLCompiler
 from django.db import connection
 
-from profiler.backends import get_backend
+from aggregate.client import get_client
+
+from profiler import _get_current_view
 
 def execute_sql(self, *args, **kwargs):
-    backend = get_backend()
-    if backend is None:
+    client = get_client()
+    if client is None:
         return self.__execute_sql(*args, **kwargs)
     q, params = self.as_sql()
     start = datetime.now()
@@ -15,7 +17,7 @@ def execute_sql(self, *args, **kwargs):
         return self.__execute_sql(*args, **kwargs)
     finally:
         d = (datetime.now() - start)
-        backend.log_query(q, d.seconds * 1000 + d.microseconds/1000)
+        client.insert({'query' : q, 'view' : _get_current_view()}, {'time' : 0.0 + d.seconds * 1000 + d.microseconds/1000, 'count' : 1})
         
 INSTRUMENTED = False
 

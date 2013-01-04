@@ -1,18 +1,21 @@
 from datetime import datetime
 import inspect
 
+#import statprof
+
 from django.db import connection
 from django.core.cache import cache
 
-from profiler import backends
+
+from aggregate.client import get_client
+
+from profiler import _set_current_view
 
 class ProfilerMiddleware(object):
 
     def process_request(self, request):
-        active_sessions = cache.get('profiler_active_sessions', [])
-        #TODO: filter sessions by condition
-        backend = backends.get_backend()
-        backend.start_request()
+        client = get_client()
+        
         return None
 
     def process_view(self, request, view_func, view_args, view_kwargs):
@@ -20,13 +23,14 @@ class ProfilerMiddleware(object):
             view_name = view_func.im_class.__module__+ '.' + view_func.im_class.__name__ + view_func.__name__
         else:
             view_name = view_func.__module__ + '.' + view_func.__name__
-        backend = backends.get_backend()        
-        backend.start_view(view_name)
+        
+        _set_current_view(view_name)
         return None
+
     
     def process_response(self, request, response):
-        backend = backends.get_backend()
-        backend.end_request()
+        _set_current_view(None)
+        #statprof.stop()
         return response
 
 

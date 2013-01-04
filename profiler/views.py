@@ -5,28 +5,31 @@ from django.core.cache import cache
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
 
-from profiler.backends import get_backend
+from aggregate.client import get_client
 
 @user_passes_test(lambda u:u.is_superuser)
 def global_stats(request):
-    stats = get_backend().get_stats(None)
+    stats = get_client().select()
+    for s in stats:
+        s['average_time'] = s['time'] / s['count']
     return render_to_response('profiler/index.html',
                               {'queries' : stats},
                               context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_superuser)
 def stats_by_view(request):
-    stats = get_backend().get_stats(None, group_by_view=True)
+    stats = get_client().select(group_by=['view','query'])
     grouped = {}
     for r in stats:
         if r['view'] not in grouped:
             grouped[r['view']] = {'queries' : [], 
-                                  'times_ran' : 0,
-                                  'total_time' : 0,
+                                  'count' : 0,
+                                  'time' : 0,
                                   'average_time' : 0}
         grouped[r['view']]['queries'].append(r)
-        grouped[r['view']]['times_ran'] += r['times_ran']
-        grouped[r['view']]['total_time'] += r['total_time']
+        grouped[r['view']]['count'] += r['count']
+        grouped[r['view']]['time'] += r['time']
+        r['average_time'] = r['time'] / r['count'] 
         grouped[r['view']]['average_time'] += r['average_time']
         
         

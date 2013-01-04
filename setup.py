@@ -23,7 +23,7 @@ setup(
     license = "BSD",
     keywords = "django profiler",
     url = "https://github.com/InviteBox/django-live-profiler",
-    packages=['profiler',],
+    packages=['profiler','aggregate'],
     long_description=long_description,
     install_requires=('pyzmq',),
     classifiers=[
