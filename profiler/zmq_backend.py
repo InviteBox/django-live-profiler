@@ -1,6 +1,7 @@
 import zmq
 import random
 
+from profiler.aggregator import Aggregator
 
 
 class ZmqBackend(object):
@@ -42,7 +43,7 @@ from threading import Thread
 from zmq.eventloop import ioloop
 
 
-def ctl(queries, views):
+def ctl(aggregator):
     context = zmq.Context.instance()
     socket = context.socket(zmq.REP)
     socket.bind("tcp://*:5557")
@@ -50,19 +51,14 @@ def ctl(queries, views):
         cmd, args, kwargs = socket.recv_pyobj()
         if cmd == 'get_stats':
             if kwargs['group_by_view']:
-                ret = []
-                for k,v in views.items():
-                    for vv in v.values():
-                        vv['view'] = k
-                        ret.append(vv)
+                ret = aggregator.select(group_by=['view', 'query'])
             else:
-                ret = queries.values()
+                ret = aggregator.select(group_by=['query'])
             for v in ret:
                 v['average_time'] = v['total_time'] / v['times_ran']
             socket.send_pyobj(ret)
         elif cmd == 'reset':
-            queries.clear()
-            views.clear()
+            aggregator.clear()
             socket.send_pyobj(True)
 
 if __name__ == "__main__":
@@ -70,31 +66,13 @@ if __name__ == "__main__":
     socket = context.socket(zmq.SUB)
     socket.bind("tcp://*:5556")
     socket.setsockopt(zmq.SUBSCRIBE,'')
-    queries = {}
-    views = {}
-    statthread = Thread(target=ctl, args=(queries, views))
+    a = Aggregator()
+    statthread = Thread(target=ctl, args=(a,))
     statthread.start()
-    def store(q, queries):
-        query = q['query']
-
-        try:
-            stored = queries[query]
-        except KeyError:
-            stored = queries[query] = {
-                'query' : query,
-                'times_ran' : 0,
-                'total_time' : 0.0,
-                }
-        
-        stored['times_ran'] += 1
-        stored['total_time'] += q['time']
         
     while True:
         q = socket.recv_pyobj()
-        store(q, queries)
-        try:
-            view_data = views[q['view']]
-        except KeyError:
-            view_data = views[q['view']] = {}
-        store(q, view_data)
-    
+        a.insert({'query' : q['query'],
+                  'view' : q['view']},
+                 {'total_time' : q['time'],
+                  'times_ran' : 1})
