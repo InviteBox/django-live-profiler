@@ -23,7 +23,9 @@ Installation
 1. Run `pip install django-live-profiler`
 2. Add `'profiler'` app to `INSTALLED_APPS` 
 3. Add `'profiler.middleware.ProfilerMiddleware'` to `MIDDLEWARE_CLASSES`
-4. Add `url(r'^profiler/', include('profiler.urls'))` to your urlconf
+4. Optionally add `'profiler.middleware.StatProfMiddleware'` to `MIDDLEWARE_CLASSES` to enable Python code statistical profiling (using statprof_). WARNING: this currently incurs a significant performance penalty.
+5. Add `url(r'^profiler/', include('profiler.urls'))` to your urlconf
 
+.. _statprof: https://github.com/bos/statprof.py
 
 Visit http://yoursite.com/profiler/ for results.

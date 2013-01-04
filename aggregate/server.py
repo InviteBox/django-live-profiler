@@ -29,10 +29,13 @@ class Aggregator(object):
         for k, v in self.data.iteritems():
             matched = 0
             for key_k, key_v in k:
-                if where.get(key_k) == key_v:
-                    matched += 1
-                else:
-                    break
+                try:
+                    if where[key_k] == key_v:
+                        matched += 1
+                    else:
+                        break
+                except KeyError:
+                    pass
             if matched < len(where):
                 continue
             a.insert(dict((kk, vv) for kk,vv in k if kk in group_by),

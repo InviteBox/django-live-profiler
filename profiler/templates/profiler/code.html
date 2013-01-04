@@ -1,0 +1,30 @@
+ {% extends 'profiler/base.html' %}
+{% block content %}
+<table class="table table-striped sortable">
+  <thead>
+    <tr>
+      <th>File</th>
+      <th>Line no</th>
+      <th class="num">Samples (self)</th>
+      <th class="num">Samples (cummulative)</th>
+      <th class="num">Time (self)</th>
+      <th class="num">Time (cummulative)</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for c in stats %}      
+    <tr>
+      <td>{{ c.file  }}</td>
+      <td>{{ c.lineno  }}</td>
+      <td class="num">{{ c.self_nsamples }}</td>
+      <td class="num">{{ c.cum_nsamples }}</td>
+      <td class="num">{{ c.self_time }}</td>
+      <td class="num">{{ c.cum_time }}</td>
+
+    </tr>
+    {% endfor %}
+
+  </tbody>
+</table>
+{% endblock %}
+

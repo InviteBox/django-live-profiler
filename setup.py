@@ -15,7 +15,7 @@ else:
 
 setup(
     name = "django-live-profiler",
-    version = "0.0.6",
+    version = "0.0.7",
     author = "Alexander Tereshkin",
     author_email = "atereshkin@invitebox.com",
     description = ("A database access profiler for Django-based applications that can be ran in production "
@@ -25,7 +25,7 @@ setup(
     url = "https://github.com/InviteBox/django-live-profiler",
     packages=['profiler','aggregate'],
     long_description=long_description,
-    install_requires=('pyzmq',),
+    install_requires=('pyzmq', 'statprof'),
     classifiers=[
         "Development Status :: 3 - Alpha",
         "Topic :: Software Development",

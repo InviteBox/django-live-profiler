@@ -1,3 +1,5 @@
+import threading
+
 import zmq 
 
 class _RemoteMethod:
@@ -24,6 +26,12 @@ class Aggregator(object):
         return _RemoteMethod(self.control_socket, name)
 
 
+_local = threading.local()
+
 def get_client():
     #TODO: cache it
-    return Aggregator()
+    try:
+        return _local.aggregator
+    except AttributeError:
+        _local.aggregator = Aggregator()
+        return _local.aggregator
