@@ -1,5 +1,6 @@
 {% extends 'profiler/base.html' %}
 {% block content %}
+
 {% for k,v in queries.items %}
 <table class="table table-striped sortable">
   <thead>
@@ -29,5 +30,38 @@
   </tbody>
 </table>
 {% endfor %}
+
+<style type="text/css">
+
+.node rect {
+  cursor: pointer;
+  fill: #fff;
+  fill-opacity: .5;
+  stroke: #fff;
+  stroke-width: 0.5px;
+}
+
+.node text {
+/*  font: 12px sans-serif;*/
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}
+
+    </style>
+ <div id="chart"></div>
+<script type="text/javascript">
+$(function(){
+
+data = {{ tree_data|safe }};
+data.x0=0;data.y0=0;
+update(root = data);
+
+});
+</script>
 
 {% endblock %}

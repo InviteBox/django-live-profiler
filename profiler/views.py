@@ -4,6 +4,7 @@ from django.template.context import RequestContext
 from django.core.cache import cache
 from django.contrib.auth.decorators import user_passes_test
 from django.core.urlresolvers import reverse
+from django.utils import simplejson
 
 from aggregate.client import get_client
 
@@ -32,9 +33,32 @@ def stats_by_view(request):
         r['average_time'] = r['time'] / r['count'] 
         grouped[r['view']]['average_time'] += r['average_time']
         
-        
+    maxtime = 0
+    for r in stats:
+        if r['average_time'] > maxtime:
+            maxtime = r['average_time']
+    tree = {'name' : '/', 'children':[]}
+    def get_or_create_subtree(t, name):
+        for c in t['children']:
+            if c['name'] == name:
+                return c
+        new = {'name' : name, 'children':[]}
+        t['children'].append(new)
+        return new
+    for k,v in grouped.iteritems():
+        t = tree
+        if k is None:
+            k = 'None'
+        for step in k.split('.'):
+            t = get_or_create_subtree(t, step)
+        for q in v['queries']:
+            t['children'].append({'name' : q['query'], 
+                                  'time' : q['time'],
+                                  'normtime' : (0.0+q['average_time'])/maxtime})
+            
     return render_to_response('profiler/by_view.html',
-                              {'queries' : grouped},
+                              {'queries' : grouped,
+                               'tree_data' : simplejson.dumps(tree)},
                               context_instance=RequestContext(request))
 
 @user_passes_test(lambda u:u.is_superuser)
