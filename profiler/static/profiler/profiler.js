@@ -16,7 +16,7 @@ $(function(){
 		  $t.append($('<a class="ellipsis" href="javascript:;">...</a>').click(expand));
 	  }
       });
-  $('.sortable').tablesorter();    
+  $('.sortable').tablesorter();
   }
 );
 
@@ -46,29 +46,37 @@ function update(source) {
 
   // Compute the flattened node list. TODO use d3.layout.hierarchy.
   var nodes = tree.nodes(root);
-  
-  // Compute the "layout".
-  nodes.forEach(function(n, i) {
-    n.x = i * barHeight;
-  });
-  
+
+
   // Update the nodes…
   var node = vis.selectAll("g.node")
       .data(nodes, function(d) { return d.id || (d.id = ++i); });
-  
+
+
+
+
   var nodeEnter = node.enter().append("svg:g")
       .attr("class", "node")
       .attr("transform", function(d) { return "translate(" + source.y0 + "," + source.x0 + ")"; })
       .style("opacity", 1e-6);
 
+    var dh=0;
+  // Compute the "layout".
+  nodes.forEach(function(n,i) {
+	      n.x = dh;
+	      dh+=wrapText(n.name).length*30;
+	    });
+  d3.select('#chart svg').transition().attr('height', dh+20);
+
+
   // Enter any new nodes at the parent's previous position.
   nodeEnter.append("svg:rect")
       .attr("y", -barHeight / 2)
-      .attr("height", barHeight)
+      .attr("height", function(d){return wrapText(d.name).length*30; })
       .attr("width", barWidth)
       .style("fill",color)
       .on("click", click);
-  
+
   nodeEnter.append("svg:text")
       .attr("dy", 3.5)
       .attr("dx", 5.5)
@@ -79,7 +87,7 @@ function update(source) {
 		  .enter()
 		  .append('svg:tspan')
 		  .attr('x',0)
-		  .attr('dy', 10)
+		  .attr('dy', 20)
 		  .text(function(dd){return dd;});
 
 	  });
@@ -87,31 +95,31 @@ function update(source) {
 
 
 
-  
+
   // Transition nodes to their new position.
   nodeEnter.transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
       .style("opacity", 1);
-  
+
   node.transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + d.y + "," + d.x + ")"; })
       .style("opacity", 1)
     .select("rect")
       .style("fill", color);
-  
+
   // Transition exiting nodes to the parent's new position.
   node.exit().transition()
       .duration(duration)
       .attr("transform", function(d) { return "translate(" + source.y + "," + source.x + ")"; })
       .style("opacity", 1e-6)
       .remove();
-  
+
   // Update the links…
   var link = vis.selectAll("path.link")
       .data(tree.links(nodes), function(d) { return d.target.id; });
-  
+
   // Enter any new links at the parent's previous position.
   link.enter().insert("svg:path", "g")
       .attr("class", "link")
@@ -122,12 +130,12 @@ function update(source) {
     .transition()
       .duration(duration)
       .attr("d", diagonal);
-  
+
   // Transition links to their new position.
   link.transition()
       .duration(duration)
       .attr("d", diagonal);
-  
+
   // Transition exiting nodes to the parent's new position.
   link.exit().transition()
       .duration(duration)
@@ -136,7 +144,7 @@ function update(source) {
         return diagonal({source: o, target: o});
       })
       .remove();
-  
+
   // Stash the old positions for transition.
   nodes.forEach(function(d) {
     d.x0 = d.x;
@@ -164,14 +172,12 @@ function color(d) {
 
 function wrapText(text){
     var line='',lines = [],
-    words = text.split(' '), wc=0;
+    words = text.split(' ');
     for (var i = 0, l=words.length; i<l; i++){
 	line +=' '+words[i];
-	wc++;
-	if (wc==5) {
+	if (line.length>80) {
 	    lines.push(line);
 	    line='';
-	    wc=0;	    
 	}
     }
     lines.push(line);
