@@ -1,6 +1,7 @@
 {% extends 'profiler/base.html' %}
 {% block content %}
 
+{% comment %}
 {% for k,v in queries.items %}
 <table class="table table-striped sortable">
   <thead>
@@ -30,7 +31,7 @@
   </tbody>
 </table>
 {% endfor %}
-
+{% endcomment %}
 <style type="text/css">
 
 .node rect {
@@ -57,7 +58,10 @@ path.link {
 <script type="text/javascript">
 $(function(){
 
-data = {{ tree_data|safe }};
+//data = {{ tree_data|safe }};
+var data = toTree({{ stats|safe }},
+function(row) { var p = (row['view']||'None').split('.'); p[p.length]=row['query']; return p;},
+function(row) { return row; });
 data.x0=0;data.y0=0;
 update(root = data);
 

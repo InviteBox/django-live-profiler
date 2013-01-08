@@ -166,7 +166,7 @@ function click(d) {
 
 function color(d) {
     if (typeof(d.normtime)!='undefined')
-	return d3.hsl(d.normtime*120, 1.0, 0.5);
+	return d3.hsl(d.normtime*120, 0.9, 0.7);
   return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 }
 
@@ -182,4 +182,33 @@ function wrapText(text){
     }
     lines.push(line);
     return lines;
+}
+
+function addToTree(tree, path, values){
+    var subtree = tree;
+    for (var i=0, l=path.length; i<l; i++){
+	var found=false;
+	for (var j=0, jl=subtree.children.length; j<jl; j++){
+	    if (subtree.children[j].name == path[i]){
+		subtree = subtree.children[j];
+		found=true;
+		break;
+	    }
+	}
+	if (!found){
+	    subtree = subtree.children[subtree.children.length] = {name:path[i], children:[]};
+	}			    
+
+    }
+    $.extend(subtree, values);
+}
+
+function toTree(data, getPath, getValues){
+    var tree = {'name' : '/', 'children' : []};
+    for (var i=0, l=data.length; i<l; i++){
+	
+	addToTree(tree, getPath(data[i]), getValues(data[i]));
+    }
+    console.log(tree);
+    return tree;
 }
