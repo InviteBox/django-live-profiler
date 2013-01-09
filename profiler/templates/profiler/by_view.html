@@ -61,7 +61,15 @@ $(function(){
 //data = {{ tree_data|safe }};
 var data = toTree({{ stats|safe }},
 function(row) { var p = (row['view']||'None').split('.'); p[p.length]=row['query']; return p;},
-function(row) { return row; });
+function(node, row) { 
+    if (!!!node['time'])
+        $.extend(node, row);
+    else {
+        if (node['normtime'] < row['normtime'])
+            node['normtime'] = row['normtime'];
+    }
+
+});
 data.x0=0;data.y0=0;
 update(root = data);
 

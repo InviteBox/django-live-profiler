@@ -24,9 +24,9 @@ $(function(){
 var w = 960,
     h = 800,
     i = 0,
-    barHeight = 20,
-    barWidth = w * .8,
+    barWidth = w,
     duration = 400,
+    lineHeight = 30,
     root;
 
 var tree = d3.layout.tree()
@@ -64,34 +64,33 @@ function update(source) {
   // Compute the "layout".
   nodes.forEach(function(n,i) {
 	      n.x = dh;
-	      dh+=wrapText(n.name).length*30;
+	      dh+=wrapText(n.name).length*lineHeight;
 	    });
-  d3.select('#chart svg').transition().attr('height', dh+20);
+  d3.select('#chart svg').transition().attr('height', dh + lineHeight);
 
 
   // Enter any new nodes at the parent's previous position.
   nodeEnter.append("svg:rect")
-      .attr("y", -barHeight / 2)
-      .attr("height", function(d){return wrapText(d.name).length*30; })
-      .attr("width", barWidth)
+      .attr("y", 0)
+      .attr("height", function(d){return wrapText(d.name).length*lineHeight; })
+      .attr("width", function(d){return barWidth-d.y;})
       .style("fill",color)
       .on("click", click);
-
+    
   nodeEnter.append("svg:text")
-      .attr("dy", 3.5)
-      .attr("dx", 5.5)
-    .each(function(d){
-	      d3.select(this)
-		  .selectAll('tspan')
-		  .data(wrapText(d.name))
-		  .enter()
-		  .append('svg:tspan')
-		  .attr('x',0)
-		  .attr('dy', 20)
-		  .text(function(dd){return dd;});
-
-	  });
-//      .text(function(d) { return d.name; });
+	.attr("dy", 3.5)
+	.attr("dx", 5.5)
+	.each(function(d){
+		  d3.select(this)
+		      .selectAll('tspan')
+		      .data(wrapText(d.name))
+		      .enter()
+		      .append('svg:tspan')
+		      .attr('x',0)
+		      .attr('dy', 20)
+		      .text(function(dd){return dd;});
+		  
+	      });
 
 
 
@@ -166,7 +165,7 @@ function click(d) {
 
 function color(d) {
     if (typeof(d.normtime)!='undefined')
-	return d3.hsl(d.normtime*120, 0.9, 0.7);
+	return d3.hsl((1-d.normtime)*120, 0.9, 0.7);
   return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 }
 
@@ -184,7 +183,7 @@ function wrapText(text){
     return lines;
 }
 
-function addToTree(tree, path, values){
+function addToTree(tree, path, reduce){
     var subtree = tree;
     for (var i=0, l=path.length; i<l; i++){
 	var found=false;
@@ -197,17 +196,19 @@ function addToTree(tree, path, values){
 	}
 	if (!found){
 	    subtree = subtree.children[subtree.children.length] = {name:path[i], children:[]};
-	}			    
-
-    }
-    $.extend(subtree, values);
+	}			    	
+	reduce(subtree);
+    }   
+//    $.extend(subtree, values);
 }
 
-function toTree(data, getPath, getValues){
+function toTree(data, getPath, reduce){
     var tree = {'name' : '/', 'children' : []};
     for (var i=0, l=data.length; i<l; i++){
-	
-	addToTree(tree, getPath(data[i]), getValues(data[i]));
+	addToTree(tree, getPath(data[i]), 
+		  function(node){
+		      reduce(node, data[i]);
+		  });
     }
     console.log(tree);
     return tree;
