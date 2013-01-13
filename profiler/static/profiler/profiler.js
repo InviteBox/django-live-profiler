@@ -24,7 +24,7 @@ $(function(){
 var w = 960,
     h = 800,
     i = 0,
-    barWidth = w,
+    barWidth = w-200,
     duration = 400,
     lineHeight = 30,
     root;
@@ -77,6 +77,7 @@ function update(source) {
       .style("fill",color)
       .on("click", click);
     
+    
   nodeEnter.append("svg:text")
 	.attr("dy", 3.5)
 	.attr("dx", 5.5)
@@ -91,7 +92,23 @@ function update(source) {
 		      .text(function(dd){return dd;});
 		  
 	      });
+   nodeEnter.append("svg:text")
+    .attr('x', function(d){ return barWidth-d.y;})
+    .attr('y', 20)
+    .attr('width', 50)
+    .text(function(dd){return dd.time;});
+    nodeEnter.append("svg:text")
+    .attr('dx', function(d){ return barWidth-d.y+50;})
+    .attr('y', 20)
+    .attr('width', 50)
+    .text(function(dd){return dd.count;});
+    nodeEnter.append("svg:text")
+    .attr('dx', function(d){ return barWidth-d.y+100;})
+    .attr('y', 20)
+    .attr('width', 50)
+    .text(function(dd){return Math.round(dd.average_time*100)/100;});
 
+    
 
 
 
@@ -199,7 +216,6 @@ function addToTree(tree, path, reduce){
 	}			    	
 	reduce(subtree);
     }   
-//    $.extend(subtree, values);
 }
 
 function toTree(data, getPath, reduce){
@@ -210,6 +226,5 @@ function toTree(data, getPath, reduce){
 		      reduce(node, data[i]);
 		  });
     }
-    console.log(tree);
     return tree;
 }
