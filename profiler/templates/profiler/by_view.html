@@ -71,7 +71,10 @@ function(node, row) {
 
 });
 data.x0=0;data.y0=0;
-update(root = data);
+data.time = 'Total time';data.count='Count';data.average_time='Average time';
+update(root = data, metrics = function(node){ 
+			       return [node.time, node.count, node.average_time];
+});
 
 });
 </script>

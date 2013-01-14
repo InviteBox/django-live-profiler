@@ -21,13 +21,15 @@ $(function(){
 );
 
 
-var w = 960,
+var w = 1200,
     h = 800,
     i = 0,
-    barWidth = w-200,
+    barWidth = w,
+    statsOffset=barWidth - 100*3,
     duration = 400,
     lineHeight = 30,
-    root;
+    root,
+    metrics  = function(){return [];};
 
 var tree = d3.layout.tree()
     .size([h, 100]);
@@ -92,21 +94,14 @@ function update(source) {
 		      .text(function(dd){return dd;});
 		  
 	      });
-   nodeEnter.append("svg:text")
-    .attr('x', function(d){ return barWidth-d.y;})
-    .attr('y', 20)
-    .attr('width', 50)
-    .text(function(dd){return dd.time;});
-    nodeEnter.append("svg:text")
-    .attr('dx', function(d){ return barWidth-d.y+50;})
-    .attr('y', 20)
-    .attr('width', 50)
-    .text(function(dd){return dd.count;});
-    nodeEnter.append("svg:text")
-    .attr('dx', function(d){ return barWidth-d.y+100;})
-    .attr('y', 20)
-    .attr('width', 50)
-    .text(function(dd){return Math.round(dd.average_time*100)/100;});
+
+    for (var q=0,l=metrics(root).length;q<l;q++){
+	nodeEnter.append("svg:text")
+	    .attr('x', function(d){ return statsOffset-d.y + 100*q;})
+	    .attr('y', 20)
+	    .attr('width', 100)
+	    .text(function(dd){return metrics(dd)[q];});
+    }
 
     
 
