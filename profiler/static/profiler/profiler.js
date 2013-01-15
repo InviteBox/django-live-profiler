@@ -45,7 +45,11 @@ var vis = d3.select("#chart").append("svg:svg")
 
 
 function update(source) {
-
+    w = d3.select('#chart').style('width');
+    w=parseInt(w.substring(0,w.length-2));
+    d3.select("#chart").select("svg").attr('width', w);
+    barWidth = w;
+    
     // Compute the flattened node list. TODO use d3.layout.hierarchy.
     var nodes = tree.nodes(root);
 
