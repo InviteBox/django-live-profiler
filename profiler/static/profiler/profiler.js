@@ -20,7 +20,6 @@ $(function(){
   }
  );
 
-
 var w = 1200,
 h = 800,
 i = 0,
@@ -29,6 +28,7 @@ statsWidth= 100*3,
 duration = 400,
 lineHeight = 30,
 root,
+colorOn = 'time',
 metrics  = function(){return [];};
 
 var tree = d3.layout.tree()
@@ -53,7 +53,19 @@ function update(source) {
     // Compute the flattened node list. TODO use d3.layout.hierarchy.
     var nodes = tree.nodes(root);
 
+    var maxColorMetric = 0;
+    nodes.forEach(
+	function(n){
+	    if (n[colorOn]>maxColorMetric)
+		maxColorMetric=n[colorOn];
+	});
+    nodes.forEach(
+	function(n){
+	    n.norm = n[colorOn] / maxColorMetric;
+	}
+    );
 
+    
     // Update the nodes…
     var node = vis.selectAll("g.node")
 	.data(nodes, function(d) { return d.id || (d.id = ++i); });
@@ -188,9 +200,16 @@ function click(d) {
     update(d);
 }
 
+function selectColorOn(){
+    colorOn=this.value;
+    update();
+}
+
+d3.selectAll('[name=colorBy]').on('click', selectColorOn);
+
 function color(d) {
     if (typeof(d.normtime)!='undefined')
-	return d3.hsl((1-d.normtime)*120, 0.9, 0.7);
+	return d3.hsl((1-d.norm)*120, 0.9, 0.7);
     return d._children ? "#3182bd" : d.children ? "#c6dbef" : "#fd8d3c";
 }
 

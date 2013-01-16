@@ -4,3 +4,22 @@ body {
 
 .ellipsis { font-weight:bold; }
 td.num { width:60px; }
+
+.node rect {
+  cursor: pointer;
+  fill: #fff;
+  fill-opacity: .5;
+  stroke: #fff;
+  stroke-width: 0.5px;
+}
+
+.node text {
+/*  font: 12px sans-serif;*/
+  pointer-events: none;
+}
+
+path.link {
+  fill: none;
+  stroke: #9ecae1;
+  stroke-width: 1.5px;
+}
