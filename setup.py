@@ -15,7 +15,7 @@ else:
 
 setup(
     name = "django-live-profiler",
-    version = "0.0.7",
+    version = "0.0.8",
     author = "Alexander Tereshkin",
     author_email = "atereshkin@invitebox.com",
     description = ("A database access profiler for Django-based applications that can be ran in production "
@@ -33,5 +33,9 @@ setup(
         "Intended Audience :: Developers",
         "License :: OSI Approved :: BSD License",        
     ],
-    include_package_data=True
+    include_package_data=True,
+        entry_points={
+        'console_scripts': ['aggregated = aggregate.server:main'],
+    },
+
 )

@@ -28,4 +28,9 @@ Installation
 
 .. _statprof: https://github.com/bos/statprof.py
 
+In order to start gathering data you need to start the aggregation server::
+
+  $ aggregated --host 127.0.0.1 --port 5557
+
+
 Visit http://yoursite.com/profiler/ for results.
