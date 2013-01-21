@@ -1,4 +1,5 @@
-
+#!/bin/env python
+import argparse
 from threading import Thread
 
 import zmq
@@ -55,15 +56,30 @@ def ctl(aggregator):
         ret = getattr(aggregator, cmd)(*args, **kwargs)
         socket.send_pyobj(ret)
 
-if __name__ == "__main__":
+def main():
+    parser = argparse.ArgumentParser(description='Run aggregation daemon')
+    parser.add_argument('--host', dest='host', action='store',
+                        default='127.0.0.1',
+                        help='The IP address/hostname to listen on')
+    parser.add_argument('--port', dest='port', action='store', type=int,
+                        default='5556',
+                        help='The port to listen on')
+    
+
+
+    args = parser.parse_args()
     context = zmq.Context.instance()
     socket = context.socket(zmq.SUB)
-    socket.bind("tcp://*:5556")
+    socket.bind("tcp://%s:%d"%(args.host, args.port))
     socket.setsockopt(zmq.SUBSCRIBE,'')
     a = Aggregator()
     statthread = Thread(target=ctl, args=(a,))
+    statthread.daemon = True
     statthread.start()
         
     while True:
         q = socket.recv_pyobj()
         a.insert(*q)
+
+if __name__ == "__main__":
+    main()
