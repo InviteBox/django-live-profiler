@@ -4,7 +4,6 @@ from threading import Thread
 
 import zmq
 from zmq.eventloop import ioloop
-import cjson
 
 class Aggregator(object):
     def __init__(self):
