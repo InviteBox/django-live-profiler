@@ -20,16 +20,22 @@ class Aggregator(object):
         self.control_socket.connect("tcp://localhost:5557")
     
     def insert(self, tags, values):
-        self.data_socket.send_pyobj((tags, values))
+        self.insert_all([(tags, values)])
+        
+    def insert_all(self, items):
+        self.data_socket.send_pyobj(items)
+        
         
     def __getattr__(self, name):
         return _RemoteMethod(self.control_socket, name)
+    
+    def ping(self):
+        self.data_socket.send_pyobj(None)
 
 
 _local = threading.local()
 
 def get_client():
-    #TODO: cache it
     try:
         return _local.aggregator
     except AttributeError:

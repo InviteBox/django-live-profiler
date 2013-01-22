@@ -4,7 +4,7 @@ from threading import Thread
 
 import zmq
 from zmq.eventloop import ioloop
-
+import cjson
 
 class Aggregator(object):
     def __init__(self):
@@ -79,7 +79,9 @@ def main():
         
     while True:
         q = socket.recv_pyobj()
-        a.insert(*q)
+        for l in q:
+            a.insert(*l)
+            
 
 if __name__ == "__main__":
     main()

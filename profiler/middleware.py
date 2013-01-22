@@ -5,6 +5,7 @@ import statprof
 
 from django.db import connection
 from django.core.cache import cache
+from django.conf import settings
 
 
 from aggregate.client import get_client
@@ -30,6 +31,7 @@ class ProfilerMiddleware(object):
 class StatProfMiddleware(object):
 
     def process_request(self, request):
+        statprof.reset(getattr(settings, 'LIVEPROFILER_STATPROF_FREQUENCY', 100))
         statprof.start()
     
     def process_response(self, request, response):
@@ -38,16 +40,19 @@ class StatProfMiddleware(object):
         total_samples = statprof.state.sample_count
         secs_per_sample = statprof.state.accumulated_time / total_samples
 
-        for c in statprof.CallData.all_calls.itervalues():
-            client.insert({'file' : c.key.filename,
-                           'lineno' : c.key.lineno,
-                           'function' : c.key.name,
-                           'type' : 'python'},
-                          {'self_nsamples' : c.self_sample_count,
-                           'cum_nsamples' : c.cum_sample_count,
-                           'tot_nsamples' : total_samples,
-                           'cum_time' : c.cum_sample_count * secs_per_sample,
-                           'self_time' : c.self_sample_count * secs_per_sample
-                           })
+        client.insert_all([(
+                    {'file' : c.key.filename,
+                     'lineno' : c.key.lineno,
+                     'function' : c.key.name,
+                     'type' : 'python'},
+                    {'self_nsamples' : c.self_sample_count,
+                     'cum_nsamples' : c.cum_sample_count,
+                     'tot_nsamples' : total_samples,
+                     'cum_time' : c.cum_sample_count * secs_per_sample,
+                     'self_time' : c.self_sample_count * secs_per_sample
+                     })
+                           for c in statprof.CallData.all_calls.itervalues()])
+
+
 
         return response
