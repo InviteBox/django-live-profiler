@@ -38,6 +38,8 @@ class StatProfMiddleware(object):
         statprof.stop()
         client = get_client()
         total_samples = statprof.state.sample_count
+        if total_samples == 0:
+            return response
         secs_per_sample = statprof.state.accumulated_time / total_samples
 
         client.insert_all([(
