@@ -1,6 +1,8 @@
 from datetime import datetime
 
-from django.db.models.sql.compiler import SQLCompiler
+from django.db.models.sql.compiler import SQLCompiler, empty_iter
+from django.db.models.sql.datastructures import EmptyResultSet
+from django.db.models.sql.constants import MULTI
 from django.db import connection
 
 from aggregate.client import get_client
@@ -11,7 +13,15 @@ def execute_sql(self, *args, **kwargs):
     client = get_client()
     if client is None:
         return self.__execute_sql(*args, **kwargs)
-    q, params = self.as_sql()
+    try:
+        q, params = self.as_sql()
+        if not q:
+            raise EmptyResultSet
+    except EmptyResultSet:
+        if kwargs.get('result_type', MULTI) == MULTI:
+            return empty_iter()
+        else:
+            return
     start = datetime.now()
     try:
         return self.__execute_sql(*args, **kwargs)
