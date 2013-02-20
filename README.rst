@@ -2,20 +2,7 @@
 django-live-profiler
 ====================
 
-Profile Django-based applications running in production with minimal performance overhead.
-
----------
-Rationale
----------
-Profiling web applications on a development environment often produces misleading results due to different patterns in the data, different patterns in user behavior and differences in infrastructure. 
-
-All existing DB access profiling solutions for Django seem to be focusing on a single request. However, in the real world certain queries might be negligible in a single request while still putting a considerable strain the database across all requests.
-
-*django-live-profiler* aims to solve these issues by collecting database usage data from a live application.
-
-.. image :: https://github.com/InviteBox/django-live-profiler/raw/master/doc/screenshot1.png
-   :alt: screenshot
-
+Django-live-profiler is a low-overhead data access and code profiler for Django-based applications. For more information, check out http://invitebox.github.com/django-live-profiler/
 
 ------------
 Installation
@@ -27,6 +14,10 @@ Installation
 5. Add `url(r'^profiler/', include('profiler.urls'))` to your urlconf
 
 .. _statprof: https://github.com/bos/statprof.py
+
+-----
+Usage
+-----
 
 In order to start gathering data you need to start the aggregation server::
 
