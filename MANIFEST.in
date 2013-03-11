@@ -1,0 +1,2 @@
+recursive-include profiler/templates *
+recursive-include profiler/static *
