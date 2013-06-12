@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from django.db.models.sql.compiler import SQLCompiler, empty_iter
+from django.db.models.sql.compiler import SQLCompiler
 from django.db.models.sql.datastructures import EmptyResultSet
 from django.db.models.sql.constants import MULTI
 from django.db import connection
@@ -19,7 +19,7 @@ def execute_sql(self, *args, **kwargs):
             raise EmptyResultSet
     except EmptyResultSet:
         if kwargs.get('result_type', MULTI) == MULTI:
-            return empty_iter()
+            return iter([])
         else:
             return
     start = datetime.now()
@@ -27,9 +27,9 @@ def execute_sql(self, *args, **kwargs):
         return self.__execute_sql(*args, **kwargs)
     finally:
         d = (datetime.now() - start)
-        client.insert({'query' : q, 'view' : _get_current_view(), 'type' : 'sql'}, 
+        client.insert({'query' : q, 'view' : _get_current_view(), 'type' : 'sql'},
                       {'time' : 0.0 + d.seconds * 1000 + d.microseconds/1000, 'count' : 1})
-        
+
 INSTRUMENTED = False
 
 
@@ -38,4 +38,3 @@ if not INSTRUMENTED:
     SQLCompiler.__execute_sql = SQLCompiler.execute_sql
     SQLCompiler.execute_sql = execute_sql
     INSTRUMENTED = True
-
